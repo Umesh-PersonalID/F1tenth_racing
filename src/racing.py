@@ -27,7 +27,7 @@ csv_path = os.path.join(abs_pkg, '..', 'csv', 'gp_centerline.csv')
 
 
 df = pd.read_csv(csv_path)
-print(df.head())  # Show first 5 rows
+print(df.head())
 # print(df["x"][1])
 
 
@@ -105,23 +105,19 @@ def callback(data):
     cmd = AckermannDrive()
     curr_pos = [curr_x, curr_y]
     
-    # Get next 20 points (or remaining points if near end)
     lookahead = min(20, len(target_points_x) - current_goal_idx)
     check_x = np.array(target_points_x[current_goal_idx:current_goal_idx+lookahead])
     check_y = np.array(target_points_y[current_goal_idx:current_goal_idx+lookahead])
     
-    # Calculate average curvature over the lookahead points
     def calculate_curvatures(x_points, y_points):
         curvatures = []
         for i in range(1, len(x_points)-1):
-            # Using three-point curvature estimation
             x0, x1, x2 = x_points[i-1], x_points[i], x_points[i+1]
             y0, y1, y2 = y_points[i-1], y_points[i], y_points[i+1]
             
             dx1, dy1 = x1 - x0, y1 - y0
             dx2, dy2 = x2 - x1, y2 - y1
             
-            # Cross product to estimate curvature
             cross = abs(dx1 * dy2 - dx2 * dy1)
             denom = (dx1**2 + dy1**2)**1.5
             if denom > 1e-6:  # Avoid division by zero
@@ -131,23 +127,18 @@ def callback(data):
     curvatures = calculate_curvatures(check_x, check_y)
     
     if len(curvatures) > 0:
-        # Weighted average (more weight to nearer points)
         weights = np.linspace(1.0, 0.5, len(curvatures))
         avg_curvature = np.average(curvatures, weights=weights)
+   
+        max_speed = 4.0  
+        min_speed = 1.0   
         
-        # Dynamic speed adjustment based on curvature
-        max_speed = 4.0  # Maximum speed on straight sections
-        min_speed = 1.0   # Minimum speed on sharp turns
-        
-        # Smooth speed transition based on curvature
         speed = max_speed / (1.0 + 2.0 * avg_curvature)
         speed = max(min(speed, max_speed), min_speed)
         
         rospy.loginfo(f"Avg curvature: {avg_curvature:.4f}, Speed: {speed:.2f}")
     else:
-        speed = 3.0  # Default speed if curvature can't be calculated
-    
-    # Rest of your pure pursuit logic remains the same
+        speed = 3.0 
     path_x.append(curr_x)
     path_y.append(curr_y)
     goal = (target_points_x[current_goal_idx], target_points_y[current_goal_idx])
@@ -155,7 +146,6 @@ def callback(data):
     if distance_ld(curr_pos, goal) < 0.5:
         current_goal_idx += 1
     
-    # Calculate steering angle (your existing code)
     q = data.pose.pose.orientation
     orientation_list = [q.x, q.y, q.z, q.w]
     (_, _, yaw) = tf.transformations.euler_from_quaternion(orientation_list)
