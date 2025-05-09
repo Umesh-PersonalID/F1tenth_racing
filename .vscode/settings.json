@@ -1,0 +1,12 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/umesh/catkin_ws/devel/lib/python3/dist-packages",
+        "/home/umesh/ws_livox/devel/lib/python3/dist-packages",
+        "/opt/ros/noetic/lib/python3/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/umesh/catkin_ws/devel/lib/python3/dist-packages",
+        "/home/umesh/ws_livox/devel/lib/python3/dist-packages",
+        "/opt/ros/noetic/lib/python3/dist-packages"
+    ]
+}

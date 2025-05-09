@@ -1,0 +1,6 @@
+<launch>
+    <include file="$(find audubon_unity)/launch/audubon_unity.launch"/>
+    <!-- <node pkg="f1tenth_racing" type="test_racing.py" name="f1racing" output="screen"/> -->
+    <node pkg="f1tenth_racing" type="racing.py" name="f1racing" output="screen"/>
+    
+</launch>

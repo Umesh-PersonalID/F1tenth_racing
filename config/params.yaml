@@ -1,0 +1,2 @@
+odom_topic: "/car_1/odom"
+command_topic: "/car_1/command"
